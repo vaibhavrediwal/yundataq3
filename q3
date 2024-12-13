@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+from scipy.spatial.distance import cdist
+from scipy.sparse.csgraph import connected_components
+from scipy.sparse import csr_matrix
+
+# Create a sample dataframe with x and y coordinates
+data = {'x': [1.0, 1.2, 2.5, 3.0, 3.2],
+        'y': [1.0, 1.1, 2.6, 3.0, 3.1]}
+df = pd.DataFrame(data)
+
+# Calculate pairwise Euclidean distances
+points = df[['x', 'y']].to_numpy()
+distance_matrix = cdist(points, points)
+
+# Create a graph where edges connect points within 0.5 distance
+adjacency_matrix = (distance_matrix <= 0.5).astype(int)
+
+# Find connected components
+graph = csr_matrix(adjacency_matrix)
+n_components, labels = connected_components(csgraph=graph, directed=False)
+
+# Add group labels to the dataframe
+df['group'] = labels
+
+print(df)
